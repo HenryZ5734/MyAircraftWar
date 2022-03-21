@@ -121,6 +121,9 @@ public class Game extends JPanel {
             // 飞机移动
             aircraftsMoveAction();
 
+            // 道具移动
+            itemsMoveAction();
+
             // 撞击检测
             crashCheckAction();
 
@@ -186,6 +189,13 @@ public class Game extends JPanel {
             enemyAircraft.forward();
         }
     }
+
+    private void itemsMoveAction() {
+        for (AbstractItems item : items) {
+            item.forward();
+        }
+    }
+
 
 
     /**

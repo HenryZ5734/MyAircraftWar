@@ -6,8 +6,8 @@ public class ItemBlood extends AbstractItems{
 
     private int add_Hp = 20;
 
-    public ItemBlood(int locationX, int locationY) {
-        super(locationX, locationY);
+    public ItemBlood(int locationX, int locationY, int speedX, int speedY) {
+        super(locationX, locationY, speedX, speedY);
     }
 
     @Override

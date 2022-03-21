@@ -43,8 +43,8 @@ public class EliteEnemy extends AbstractEnemy{
     public AbstractItems drop_Items(){
         double i = Math.random();
         if(i<0.4) return null;
-        else if(i<0.7) return new ItemBlood(locationX, locationY);
-        else if(i<0.9) return new ItemFire(locationX, locationY);
-        else return new ItemBomb(locationX, locationY);
+        else if(i<0.7) return new ItemBlood(locationX, locationY, 0, 4);
+        else if(i<0.9) return new ItemFire(locationX, locationY, 0, 4);
+        else return new ItemBomb(locationX, locationY, 0, 4);
     }
 }

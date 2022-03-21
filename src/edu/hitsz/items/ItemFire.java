@@ -6,8 +6,8 @@ public class ItemFire extends AbstractItems{
 
     private int add_Fire = 10;
 
-    public ItemFire(int locationX, int locationY) {
-        super(locationX, locationY);
+    public ItemFire(int locationX, int locationY, int speedX, int speedY) {
+        super(locationX, locationY, speedX, speedY);
     }
 
     @Override

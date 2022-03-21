@@ -44,8 +44,9 @@ abstract class BaseBullet
 }
 
 abstract class AbstractItems{
-    + AbstractItems(int locationX, int locationY)
+    + AbstractItems(int locationX, int locationY, int speedX, int speedY)
     + {abstract}ActivateItem(HeroAircraft heroAircraft):void
+    + forward():void
 }
 
 AbstractFlyingObject <|-- AbstractAircraft
@@ -99,18 +100,18 @@ class BossEnemy{
 
 class ItemBlood{
     # add_Hp:int
-    + ItemBlood(int locationX, int locationY)
+    + ItemBlood(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
 class ItemFire{
     # add_Fire:int
-    + ItemFire(int locationX, int locationY)
+    + ItemFire(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
 class ItemBomb{
-    + ItemBomb(int locationX, int locationY)
+    + ItemBomb(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 class HeroBullet {
