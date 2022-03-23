@@ -29,7 +29,7 @@ public class HeroAircraft extends AbstractAircraft {
     }
     /** 加血 */
     public void increaseHp(int increment){
-        this.hp += increment;
+        this.hp = Math.min(this.hp+increment, maxHp);
     }
     @Override
     public void forward() {
