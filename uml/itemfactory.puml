@@ -1,0 +1,54 @@
+@startuml
+
+abstract class AbstractItems{
+    + AbstractItems(int locationX, int locationY, int speedX, int speedY)
+    + {abstract}ActivateItem(HeroAircraft heroAircraft):void
+    + forward():void
+}
+
+interface ItemsCreator{
+    + {abstract}CreateItem(int locationX, int locationY, int speedX, int speedY):AbstractItems
+}
+
+AbstractItems <|-- ItemBlood
+AbstractItems <|-- ItemFire
+AbstractItems <|-- ItemBomb
+
+ItemsCreator <|-- ItemBloodCreator
+ItemsCreator <|-- ItemFireCreator
+ItemsCreator <|-- ItemBombCreator
+
+ItemBloodCreator ..> ItemBlood
+ItemFireCreator ..> ItemFire
+ItemBombCreator ..> ItemBomb
+
+class ItemBlood{
+    - add_Hp:int
+    + ItemBlood(int locationX, int locationY, int speedX, int speedY)
+    + ActivateItem(HeroAircraft heroAircraft):void
+}
+
+class ItemFire{
+    - add_Fire:int
+    + ItemFire(int locationX, int locationY, int speedX, int speedY)
+    + ActivateItem(HeroAircraft heroAircraft):void
+}
+
+class ItemBomb{
+    + ItemBomb(int locationX, int locationY, int speedX, int speedY)
+    + ActivateItem(HeroAircraft heroAircraft):void
+}
+
+class ItemBloodCreator{
+    + CreateItem(int locationX, int locationY, int speedX, int speedY):ItemBlood
+}
+
+class ItemFireCreator{
+    + CreateItem(int locationX, int locationY, int speedX, int speedY):ItemFire
+}
+
+class ItemBombCreator{
+    + CreateItem(int locationX, int locationY, int speedX, int speedY):ItemBomb
+}
+
+@enduml

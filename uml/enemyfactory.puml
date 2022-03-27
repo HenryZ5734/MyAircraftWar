@@ -1,0 +1,53 @@
+@startuml
+
+AbstractEnemy <|-- MobEnemy
+AbstractEnemy <|-- EliteEnemy
+AbstractEnemy <|-- BossEnemy
+
+EnemyCreator <|-- MobCreator
+EnemyCreator <|-- EliteCreator
+EnemyCreator <|-- BossCreator
+
+MobCreator ..> MobEnemy
+EliteCreator ..> EliteEnemy
+BossCreator ..> BossEnemy
+
+interface EnemyCreator{
+    + {abstract}createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):AbstractEnemy
+}
+
+abstract class AbstractEnemy{
+    + AbstractEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + forward():void
+}
+
+class MobEnemy {
+    + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + shoot():List<BaseBullet>
+}
+class EliteEnemy{
+    - shootNum:int
+    - power:int
+    - direction:int
+    + EliteAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    + shoot():List<BaseBullet>
+    + drop_Items():AbstractItems
+}
+
+class BossEnemy{
+
+}
+
+class MobCreator{
+    + createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):MobEnemy
+}
+
+class EliteCreator{
+    + createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):EliteEnemy
+}
+
+class BossCreator{
+    + createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):BossEnemy
+}
+
+@enduml
