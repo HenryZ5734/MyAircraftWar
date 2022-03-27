@@ -1,0 +1,26 @@
+@startuml
+
+AbstractAircraft <|-- HeroAircraft
+
+abstract class AbstractAircraft
+{
+	# maxHp:int
+    # hp:int
+    + AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    + decreaseHp(int decrease):void
+    + getHp():int
+    + {abstract} shoot():List<BaseBullet>
+}
+
+class HeroAircraft {
+    - shootNum:int
+    - power:int
+    - direction:int
+    - heroAircraft:HeroAircraft
+    - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    + {static}getHeroAircraft():HeroAircraft
+    + forward():void
+    + shoot():List<BaseBullet>
+}
+
+@enduml
