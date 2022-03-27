@@ -3,6 +3,9 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.enemycreator.EliteCreator;
+import edu.hitsz.enemycreator.EnemyCreator;
+import edu.hitsz.enemycreator.MobCreator;
 import edu.hitsz.items.AbstractItems;
 
 import javax.swing.*;
@@ -89,7 +92,8 @@ public class Game extends JPanel {
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     double i = Math.random();
                     if(i<thresh){
-                        enemyAircrafts.add(new MobEnemy(
+                        EnemyCreator enemyCreator = new MobCreator();
+                        enemyAircrafts.add(enemyCreator.createEnemy(
                                 (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
                                 0,
@@ -98,7 +102,8 @@ public class Game extends JPanel {
                         ));
                     }
                     else{
-                        enemyAircrafts.add(new EliteEnemy(
+                        EnemyCreator enemyCreator = new EliteCreator();
+                        enemyAircrafts.add(enemyCreator.createEnemy(
                                 (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
                                 0,

@@ -71,7 +71,9 @@ class HeroAircraft {
     - shootNum:int
     - power:int
     - direction:int
-    + HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    - heroAircraft:HeroAircraft
+    - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+    + {static}getHeroAircraft():HeroAircraft
     + forward():void
     + shoot():List<BaseBullet>
 }
@@ -99,13 +101,13 @@ class BossEnemy{
 }
 
 class ItemBlood{
-    # add_Hp:int
+    - add_Hp:int
     + ItemBlood(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
 class ItemFire{
-    # add_Fire:int
+    - add_Fire:int
     + ItemFire(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }

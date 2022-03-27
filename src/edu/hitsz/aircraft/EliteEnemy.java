@@ -3,9 +3,10 @@ package edu.hitsz.aircraft;
 import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.bullet.EnemyBullet;
 import edu.hitsz.items.AbstractItems;
-import edu.hitsz.items.ItemBlood;
-import edu.hitsz.items.ItemBomb;
-import edu.hitsz.items.ItemFire;
+import edu.hitsz.itemscreator.ItemBloodCreator;
+import edu.hitsz.itemscreator.ItemBombCreator;
+import edu.hitsz.itemscreator.ItemFireCreator;
+import edu.hitsz.itemscreator.ItemsCreator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -43,8 +44,17 @@ public class EliteEnemy extends AbstractEnemy{
     public AbstractItems drop_Items(){
         double i = Math.random();
         if(i<0.4) return null;
-        else if(i<0.7) return new ItemBlood(locationX, locationY, 0, 4);
-        else if(i<0.9) return new ItemFire(locationX, locationY, 0, 4);
-        else return new ItemBomb(locationX, locationY, 0, 4);
+        else if(i<0.7){
+            ItemsCreator creator = new ItemBloodCreator();
+            return creator.CreateItem(locationX, locationY, 0, 4);
+        }
+        else if(i<0.9){
+            ItemsCreator creator = new ItemFireCreator();
+            return creator.CreateItem(locationX, locationY, 0, 4);
+        }
+        else{
+            ItemsCreator creator = new ItemBombCreator();
+            return creator.CreateItem(locationX, locationY, 0, 4);
+        }
     }
 }
