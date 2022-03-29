@@ -1,6 +1,9 @@
 @startuml
 
 AbstractAircraft <|-- HeroAircraft
+Game ..> AbstractAircraft
+
+class Game{}
 
 abstract class AbstractAircraft
 {

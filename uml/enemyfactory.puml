@@ -1,17 +1,23 @@
 @startuml
 
+Game ..> EnemyCreator
+Game ..> AbstractEnemy
+
 AbstractEnemy <|-- MobEnemy
 AbstractEnemy <|-- EliteEnemy
 AbstractEnemy <|-- BossEnemy
 
-EnemyCreator <|-- MobCreator
-EnemyCreator <|-- EliteCreator
-EnemyCreator <|-- BossCreator
+EnemyCreator <|.. MobCreator
+EnemyCreator <|.. EliteCreator
+EnemyCreator <|.. BossCreator
 
 MobCreator ..> MobEnemy
 EliteCreator ..> EliteEnemy
 BossCreator ..> BossEnemy
 
+class Game{
+
+}
 interface EnemyCreator{
     + {abstract}createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):AbstractEnemy
 }

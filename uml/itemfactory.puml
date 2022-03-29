@@ -1,5 +1,7 @@
 @startuml
 
+class EliteEnemy{}
+
 abstract class AbstractItems{
     + AbstractItems(int locationX, int locationY, int speedX, int speedY)
     + {abstract}ActivateItem(HeroAircraft heroAircraft):void
@@ -10,13 +12,16 @@ interface ItemsCreator{
     + {abstract}CreateItem(int locationX, int locationY, int speedX, int speedY):AbstractItems
 }
 
+EliteEnemy ..> ItemsCreator
+EliteEnemy ..> AbstractItems
+
 AbstractItems <|-- ItemBlood
 AbstractItems <|-- ItemFire
 AbstractItems <|-- ItemBomb
 
-ItemsCreator <|-- ItemBloodCreator
-ItemsCreator <|-- ItemFireCreator
-ItemsCreator <|-- ItemBombCreator
+ItemsCreator <|.. ItemBloodCreator
+ItemsCreator <|.. ItemFireCreator
+ItemsCreator <|.. ItemBombCreator
 
 ItemBloodCreator ..> ItemBlood
 ItemFireCreator ..> ItemFire
