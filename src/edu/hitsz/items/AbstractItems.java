@@ -19,5 +19,9 @@ public abstract class AbstractItems extends AbstractFlyingObject {
         }
     }
 
-    public abstract void ActivateItem(HeroAircraft heroAircraft);
+    /**
+     * 激活道具效果
+     * @param heroAircraft
+     */
+    public abstract void activateItem(HeroAircraft heroAircraft);
 }

@@ -15,6 +15,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -68,7 +69,15 @@ public class Game extends JPanel {
         items = new LinkedList<>();
 
         //Scheduled 线程池，用于定时任务调度
-        executorService = new ScheduledThreadPoolExecutor(1);
+        ThreadFactory gameThread = new ThreadFactory() {
+            @Override
+            public Thread newThread(Runnable r) {
+                Thread t =new Thread(r);
+                t.setName("game thread");
+                return t;
+            }
+        };
+        executorService = new ScheduledThreadPoolExecutor(1, gameThread);
 
         //启动英雄机鼠标监听
         new HeroController(this, heroAircraft);
@@ -171,7 +180,9 @@ public class Game extends JPanel {
     private void shootAction() {
         // TODO 敌机射击
         for(AbstractAircraft enemyAircraft : enemyAircrafts ){
-            if(enemyAircraft instanceof EliteEnemy) enemyBullets.addAll(enemyAircraft.shoot());
+            if(enemyAircraft instanceof EliteEnemy) {
+                enemyBullets.addAll(enemyAircraft.shoot());
+            }
         }
         // 英雄射击
         heroBullets.addAll(heroAircraft.shoot());
@@ -209,8 +220,9 @@ public class Game extends JPanel {
     private void crashCheckAction() {
         // TODO 敌机子弹攻击英雄
         for(BaseBullet bullet: enemyBullets){
-            if(bullet.notValid()) continue;
-            else{
+            if(bullet.notValid()) {
+                continue;
+            } else{
                 if(bullet.crash(heroAircraft)){
                     // 英雄机损失生命值
                     heroAircraft.decreaseHp(bullet.getPower());
@@ -237,9 +249,9 @@ public class Game extends JPanel {
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
                         if(enemyAircraft instanceof EliteEnemy){
-                            AbstractItems item_temp = ((EliteEnemy) enemyAircraft).drop_Items();
-                            if(item_temp != null){
-                                items.add(item_temp);
+                            AbstractItems itemTemp = ((EliteEnemy) enemyAircraft).dropItems();
+                            if(itemTemp != null){
+                                items.add(itemTemp);
                             }
                             score += 20;
                         }
@@ -258,9 +270,10 @@ public class Game extends JPanel {
 
         // Todo: 我方获得道具，道具生效
         for(AbstractItems item : items){
-            if(item.notValid()) continue;
-            else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
-                item.ActivateItem(heroAircraft);
+            if(item.notValid()) {
+                continue;
+            } else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
+                item.activateItem(heroAircraft);
                 item.vanish();
             }
         }

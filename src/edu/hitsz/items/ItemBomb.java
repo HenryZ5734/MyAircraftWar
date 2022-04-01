@@ -9,7 +9,7 @@ public class ItemBomb extends AbstractItems{
     }
 
     @Override
-    public void ActivateItem(HeroAircraft heroAircraft) {
+    public void activateItem(HeroAircraft heroAircraft) {
         System.out.println("BombSupply active!");
     }
 }

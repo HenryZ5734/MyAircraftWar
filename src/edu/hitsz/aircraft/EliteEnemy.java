@@ -14,9 +14,9 @@ import java.util.List;
 public class EliteEnemy extends AbstractEnemy{
 
     /**攻击方式*/
-    private int shootNum = 1;     //子弹一次发射数量
-    private int power =30;       //子弹伤害
-    private int direction = 1;  //子弹射击方向
+    private int shootNum = 1; //子弹一次发射数量
+    private int power =30; //子弹伤害
+    private int direction = 1; //子弹射击方向
 
     /**精英敌机的构造函数*/
     public EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp) {
@@ -41,20 +41,20 @@ public class EliteEnemy extends AbstractEnemy{
     }
 
     /**产生道具,概率为0.4，0.3，0.2，0.1*/
-    public AbstractItems drop_Items(){
+    public AbstractItems dropItems(){
         double i = Math.random();
-        if(i<0.4) return null;
-        else if(i<0.7){
+        double[] thresh = {0.4, 0.7, 0.9};
+        if(i<thresh[0]) {
+            return null;
+        } else if(i<thresh[1]){
             ItemsCreator creator = new ItemBloodCreator();
-            return creator.CreateItem(locationX, locationY, 0, 4);
-        }
-        else if(i<0.9){
+            return creator.createItem(locationX, locationY, 0, 4);
+        } else if(i<thresh[2]){
             ItemsCreator creator = new ItemFireCreator();
-            return creator.CreateItem(locationX, locationY, 0, 4);
-        }
-        else{
+            return creator.createItem(locationX, locationY, 0, 4);
+        } else{
             ItemsCreator creator = new ItemBombCreator();
-            return creator.CreateItem(locationX, locationY, 0, 4);
+            return creator.createItem(locationX, locationY, 0, 4);
         }
     }
 }
