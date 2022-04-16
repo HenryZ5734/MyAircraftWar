@@ -3,6 +3,7 @@ package edu.hitsz.application;
 import edu.hitsz.aircraft.*;
 import edu.hitsz.basic.AbstractFlyingObject;
 import edu.hitsz.bullet.BaseBullet;
+import edu.hitsz.enemycreator.BossCreator;
 import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
@@ -11,6 +12,9 @@ import edu.hitsz.items.AbstractItems;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -47,6 +51,7 @@ public class Game extends JPanel {
 
     private boolean gameOverFlag = false;
     private int score = 0;
+    private int bossAppearThreshold=0;
     private int time = 0;
     /**
      * 周期（ms)
@@ -100,7 +105,18 @@ public class Game extends JPanel {
                 // 新敌机产生
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     double i = Math.random();
-                    if(i<thresh){
+                    if(bossAppearThreshold>=100){
+                        bossAppearThreshold -= 100;
+                        EnemyCreator enemyCreator = new BossCreator();
+                        enemyAircrafts.add(enemyCreator.createEnemy(
+                                (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
+                                1,
+                                0,
+                                200
+                        ));
+                    }
+                    else if(i<thresh){
                         EnemyCreator enemyCreator = new MobCreator();
                         enemyAircrafts.add(enemyCreator.createEnemy(
                                 (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
@@ -115,7 +131,7 @@ public class Game extends JPanel {
                         enemyAircrafts.add(enemyCreator.createEnemy(
                                 (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
-                                0,
+                                2,
                                 10,
                                 30
                         ));
@@ -146,7 +162,7 @@ public class Game extends JPanel {
 
             // 游戏结束检查
             if (heroAircraft.getHp() <= 0) {
-                // 游戏结束
+
                 executorService.shutdown();
                 gameOverFlag = true;
                 System.out.println("Game Over!");
@@ -180,7 +196,7 @@ public class Game extends JPanel {
     private void shootAction() {
         // TODO 敌机射击
         for(AbstractAircraft enemyAircraft : enemyAircrafts ){
-            if(enemyAircraft instanceof EliteEnemy) {
+            if(!(enemyAircraft instanceof MobEnemy)) {
                 enemyBullets.addAll(enemyAircraft.shoot());
             }
         }
@@ -244,19 +260,31 @@ public class Game extends JPanel {
                 if (enemyAircraft.crash(bullet) || bullet.crash(enemyAircraft)) {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
-                    enemyAircraft.decreaseHp(bullet.getPower());
+                    // 一次只能有一架boss机
                     bullet.vanish();
+                    enemyAircraft.decreaseHp(bullet.getPower());
+                    if(enemyAircraft instanceof BossEnemy && enemyAircraft.getHp()==0){
+                        BossEnemy.exist = false;
+                    }
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
-                        if(enemyAircraft instanceof EliteEnemy){
-                            AbstractItems itemTemp = ((EliteEnemy) enemyAircraft).dropItems();
+                        if(!(enemyAircraft instanceof MobEnemy)){
+                            AbstractItems itemTemp = ((AbstractEnemy)enemyAircraft).dropItems();
                             if(itemTemp != null){
                                 items.add(itemTemp);
                             }
-                            score += 20;
                         }
-                        else if(enemyAircraft instanceof MobEnemy){
+                        if(enemyAircraft instanceof MobEnemy){
                             score += 10;
+                            bossAppearThreshold += 10;
+                        }
+                        else if(enemyAircraft instanceof EliteEnemy){
+                            score += 20;
+                            bossAppearThreshold += 20;
+                        }
+                        else if(enemyAircraft instanceof BossEnemy){
+                            score += 50;
+                            bossAppearThreshold += 50;
                         }
                     }
                 }
