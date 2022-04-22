@@ -8,13 +8,12 @@ import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
 import edu.hitsz.items.AbstractItems;
+import edu.hitsz.rank.Record;
+import edu.hitsz.rank.RecordDaoImpl;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -162,6 +161,10 @@ public class Game extends JPanel {
 
             // 游戏结束检查
             if (heroAircraft.getHp() <= 0) {
+
+                // 打印排行榜
+                RecordDaoImpl recordDao = new RecordDaoImpl();
+                recordDao.printRecord("test", score);
 
                 executorService.shutdown();
                 gameOverFlag = true;
