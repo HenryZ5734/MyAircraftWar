@@ -1,0 +1,28 @@
+@startuml
+
+AbstractShootStrategy <|.. BossSpread
+AbstractShootStrategy <|.. HeroSpread
+AbstractShootStrategy <|.. HeroStraight
+AbstractShootStrategy <|.. EliteStraight
+
+interface AbstractShootStrategy{
+    + {abstract}executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
+}
+
+class BossSpread{
+    + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
+}
+
+class HeroSpread{
+    + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
+}
+
+class HeroStraight{
+    + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
+}
+
+class EliteStraight{
+    + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
+}
+
+@enduml
