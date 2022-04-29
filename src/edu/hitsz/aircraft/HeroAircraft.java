@@ -51,8 +51,13 @@ public class HeroAircraft extends AbstractAircraft {
     }
 
     /** 修改火力增强标志 */
-    public void alterFireActivated(){
-        heroAircraft.fireActivated = true;
+    public void setFireActivated(Boolean flag){
+        fireActivated = flag;
+    }
+
+    /** 查看火力增强标志 */
+    public Boolean getFireActivated(){
+        return fireActivated;
     }
 
     @Override

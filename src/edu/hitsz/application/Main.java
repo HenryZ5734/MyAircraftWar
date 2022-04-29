@@ -84,7 +84,7 @@ public class Main {
         try{
             rankPanel.getUserName(game.getScore());
         }
-        catch(Exception e) {
+        catch(Exception ignored) {
 
         }
     }

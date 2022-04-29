@@ -13,6 +13,6 @@ public class ItemFire extends AbstractItems{
 
     @Override
     public void activateItem(HeroAircraft heroAircraft) {
-        heroAircraft.alterFireActivated();
+        heroAircraft.setFireActivated(true);
     }
 }

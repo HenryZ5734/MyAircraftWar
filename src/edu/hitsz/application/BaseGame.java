@@ -8,6 +8,7 @@ import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
 import edu.hitsz.items.AbstractItems;
+import edu.hitsz.items.ItemFire;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,6 +33,7 @@ public abstract class BaseGame extends JPanel {
      * Scheduled 线程池，用于任务调度
      */
     private final ScheduledExecutorService executorService;
+    private Thread calTimeThread = null;
 
     /**
      * 时间间隔(ms)，控制刷新频率
@@ -43,15 +45,15 @@ public abstract class BaseGame extends JPanel {
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
     private final List<AbstractItems> items;
+    private int bossAppearFlag = 0;
+    private int score = 0;
 
     /**
-     * 相关参数
+     * 游戏难度相关参数
      */
-    private int bossAppearFlag = 0;
     protected static int bossAppearThreshold = 100;
     protected static int enemyMaxNumber = 5;
     protected static double eliteAppearThreshold = 0.6;
-    private int score = 0;
 
     private boolean gameOverFlag = false;
     private int time = 0;
@@ -300,16 +302,24 @@ public abstract class BaseGame extends JPanel {
             }
         }
 
-        // Todo: 我方获得道具，道具生效
+        // 道具生效+火力道具计时
         for(AbstractItems item : items){
             if(item.notValid()) {
                 continue;
             } else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
+                if(item instanceof ItemFire){
+                    if(heroAircraft.getFireActivated()){
+                        calTimeThread.interrupt();
+                    }
+                    calTimeThread = new CalTimeThread();
+                    calTimeThread.start();
+                }
                 item.activateItem(heroAircraft);
                 item.vanish();
             }
         }
     }
+
 
     /**
      * 后处理：
