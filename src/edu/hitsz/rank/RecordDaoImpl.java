@@ -9,36 +9,24 @@ import java.util.Comparator;
  */
 public class RecordDaoImpl implements RecordDao{
 
-    private ArrayList<Record> rank = new ArrayList<>();
-
-    public void sortByScoreDescending(){
-        int i = 1;
-        rank.sort(Comparator.comparing(Record::getScore).reversed());
-        for(var record : rank){
-            record.setRank(i++);
-        }
-    }
-
-    public void writeRecord(String name, int score){
+    @Override
+    public void addRecord(String name, int score, String difficulty) {
         try{
-            // 打开文件
-            File f = new File(System.getProperty("user.dir") + "\\rank.dat");
-            if(!f.exists()){
-                f.createNewFile();
-            }
+            ArrayList<Record> rank = new ArrayList<>();
+            File f = openFile(difficulty);
 
             // 读入原有数据
             if(f.length() != 0){
                 ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-                this.rank = (ArrayList<Record>) ois.readObject();
+                rank = (ArrayList<Record>) ois.readObject();
                 ois.close();
             }
 
             // 增加新的记录
-            this.rank.add(addRecord(name, score));
+            rank.add(new Record(name, score));
 
             // 按分数排序
-            sortByScoreDescending();
+            sortByScoreDescending(rank);
 
             // 写入文件
             ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
@@ -49,22 +37,59 @@ public class RecordDaoImpl implements RecordDao{
         catch(Exception e){
             e.printStackTrace();
         }
-
     }
 
     @Override
-    public Record addRecord(String name, int score) {
-        return new Record(name, score);
-    }
+    public void deleteRecordByIndex(int index, String difficulty) {
+        try{
+            ArrayList<Record> rank;
+            // 打开文件
+            File f = openFile(difficulty);
 
-    @Override
-    public void printRecord(String name, int score) {
-        writeRecord(name, score);
-        System.out.println("***************************************");
-        System.out.println("                得分排行榜               ");
-        System.out.println("***************************************");
-        for(var record : rank){
-            System.out.println(record);
+            // 读取文件中的对象
+            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+            rank = (ArrayList<Record>) ois.readObject();
+            ois.close();
+
+            // 删除记录并更新排名
+            rank.remove(index);
+            sortByScoreDescending(rank);
+
+            // 写回文件
+            ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(f));
+            oos.writeObject(rank);
+            oos.close();
         }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    public void sortByScoreDescending(ArrayList<Record> rank){
+        int i = 1;
+        rank.sort(Comparator.comparing(Record::getScore).reversed());
+        for(var record : rank){
+            record.setRank(i++);
+        }
+    }
+
+    private File openFile(String difficulty){
+        try{
+            File f;
+            if("Easy".equals(difficulty)){
+                f = new File(System.getProperty("user.dir") + "\\easy_rank.dat");
+            }
+            else if("Normal".equals(difficulty)){
+                f = new File(System.getProperty("user.dir") + "\\normal_rank.dat");
+            }
+            else{
+                f = new File(System.getProperty("user.dir") + "\\hard_rank.dat");
+            }
+            return f;
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

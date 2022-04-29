@@ -8,6 +8,7 @@ import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
 import edu.hitsz.items.AbstractItems;
+import edu.hitsz.panel.RankPanel;
 import edu.hitsz.rank.Record;
 import edu.hitsz.rank.RecordDaoImpl;
 
@@ -162,12 +163,14 @@ public class Game extends JPanel {
             // 游戏结束检查
             if (heroAircraft.getHp() <= 0) {
 
-                // 打印排行榜
-                RecordDaoImpl recordDao = new RecordDaoImpl();
-                recordDao.printRecord("test", score);
-
                 executorService.shutdown();
                 gameOverFlag = true;
+
+                // 释放主线程的锁
+                synchronized (Main.MAIN_LOCK){
+                    Main.MAIN_LOCK.notify();
+                }
+
                 System.out.println("Game Over!");
             }
 
@@ -325,6 +328,14 @@ public class Game extends JPanel {
         items.removeIf(AbstractFlyingObject::notValid);
     }
 
+
+    public boolean isGameOverFlag(){
+        return gameOverFlag;
+    }
+
+    public int getScore() {
+        return score;
+    }
 
     //***********************
     //      Paint 各部分

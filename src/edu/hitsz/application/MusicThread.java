@@ -1,3 +1,5 @@
+package edu.hitsz.application;
+
 import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -13,6 +15,9 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.sound.sampled.DataLine.Info;
 
+/**
+ * @author hitsz
+ */
 public class MusicThread extends Thread {
 
 

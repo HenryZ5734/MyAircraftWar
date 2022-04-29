@@ -9,15 +9,15 @@ public interface RecordDao {
      * 增加记录
      * @param name 玩家名字
      * @param score 玩家分数
-     * @return 返回一个记录对象
+     * @param difficulty 游戏难度
      * */
-    Record addRecord(String name, int score);
+    void addRecord(String name, int score, String difficulty);
 
     /**
-     * 将记录打印在控制台
-     * @param name 玩家名字
-     * @param score 玩家分数
-     */
-    void printRecord(String name, int score);
+     * 删除记录
+     * @param index 数据索引
+     * @param difficulty 游戏难度
+     * */
+    void deleteRecordByIndex(int index, String difficulty);
 
 }
