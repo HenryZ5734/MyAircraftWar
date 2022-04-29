@@ -14,8 +14,6 @@ public class Main {
 
     public static final int WINDOW_WIDTH = 512;
     public static final int WINDOW_HEIGHT = 768;
-    public static final int SMALL_WINDOW_WIDTH = 256;
-    public static final int SMALL_WINDOW_HEIGHT = 384;
     public static final Object MAIN_LOCK = new Object();
 
     public static void main(String[] args) {
@@ -52,7 +50,16 @@ public class Main {
         // 游戏窗口
         String difficulty = startPanel.getDifficulty();
         frame.remove(mainPanel);
-        Game game = new Game();
+        BaseGame game;
+        if("Easy".equals(difficulty)){
+            game = new EasyGame();
+        }
+        else if("Normal".equals(difficulty)){
+            game = new NormalGame();
+        }
+        else{
+            game = new HardGame();
+        }
         frame.setContentPane(game);
         frame.setVisible(true);
         game.action();

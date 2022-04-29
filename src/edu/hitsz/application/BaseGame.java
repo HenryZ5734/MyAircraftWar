@@ -8,9 +8,6 @@ import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
 import edu.hitsz.items.AbstractItems;
-import edu.hitsz.panel.RankPanel;
-import edu.hitsz.rank.Record;
-import edu.hitsz.rank.RecordDaoImpl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,9 +24,9 @@ import java.util.concurrent.TimeUnit;
  *
  * @author hitsz
  */
-public class Game extends JPanel {
+public abstract class BaseGame extends JPanel {
 
-    private int backGroundTop = 0;
+    protected int backGroundTop = 0;
 
     /**
      * Scheduled 线程池，用于任务调度
@@ -47,12 +44,18 @@ public class Game extends JPanel {
     private final List<BaseBullet> enemyBullets;
     private final List<AbstractItems> items;
 
-    private int enemyMaxNumber = 5;
+    /**
+     * 相关参数
+     */
+    private int bossAppearFlag = 0;
+    protected static int bossAppearThreshold = 100;
+    protected static int enemyMaxNumber = 5;
+    protected static double eliteAppearThreshold = 0.6;
+    private int score = 0;
 
     private boolean gameOverFlag = false;
-    private int score = 0;
-    private int bossAppearThreshold=0;
     private int time = 0;
+
     /**
      * 周期（ms)
      * 指示子弹的发射、敌机的产生频率
@@ -60,12 +63,7 @@ public class Game extends JPanel {
     private int cycleDuration = 600;
     private int cycleTime = 0;
 
-    /**
-     * 产生普通敌机的概率
-     */
-    private double thresh = 0.6;
-
-    public Game() {
+    public BaseGame() {
         heroAircraft = HeroAircraft.getHeroAircraft();
 
         enemyAircrafts = new LinkedList<>();
@@ -105,22 +103,22 @@ public class Game extends JPanel {
                 // 新敌机产生
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     double i = Math.random();
-                    if(bossAppearThreshold>=100){
-                        bossAppearThreshold -= 100;
+                    if(bossAppearFlag >= bossAppearThreshold){
+                        bossAppearFlag -= 100;
                         EnemyCreator enemyCreator = new BossCreator();
                         enemyAircrafts.add(enemyCreator.createEnemy(
-                                (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2),
                                 1,
                                 0,
                                 200
                         ));
                     }
-                    else if(i<thresh){
+                    else if(i<eliteAppearThreshold){
                         EnemyCreator enemyCreator = new MobCreator();
                         enemyAircrafts.add(enemyCreator.createEnemy(
-                                (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth()))*1,
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2),
                                 0,
                                 10,
                                 30
@@ -129,8 +127,8 @@ public class Game extends JPanel {
                     else{
                         EnemyCreator enemyCreator = new EliteCreator();
                         enemyAircrafts.add(enemyCreator.createEnemy(
-                                (int) ( Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth()))*1,
-                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2)*1,
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2),
                                 2,
                                 10,
                                 30
@@ -282,15 +280,15 @@ public class Game extends JPanel {
                         }
                         if(enemyAircraft instanceof MobEnemy){
                             score += 10;
-                            bossAppearThreshold += 10;
+                            bossAppearFlag += 10;
                         }
                         else if(enemyAircraft instanceof EliteEnemy){
                             score += 20;
-                            bossAppearThreshold += 20;
+                            bossAppearFlag += 20;
                         }
                         else if(enemyAircraft instanceof BossEnemy){
                             score += 50;
-                            bossAppearThreshold += 50;
+                            bossAppearFlag += 50;
                         }
                     }
                 }
@@ -352,8 +350,7 @@ public class Game extends JPanel {
         super.paint(g);
 
         // 绘制背景,图片滚动
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop - Main.WINDOW_HEIGHT, null);
-        g.drawImage(ImageManager.BACKGROUND_IMAGE, 0, this.backGroundTop, null);
+        paintBackground(g);
         this.backGroundTop += 1;
         if (this.backGroundTop == Main.WINDOW_HEIGHT) {
             this.backGroundTop = 0;
@@ -372,8 +369,9 @@ public class Game extends JPanel {
 
         //绘制得分和生命值
         paintScoreAndLife(g);
-
     }
+
+    protected abstract void paintBackground(Graphics g);
 
     private void paintImageWithPositionRevised(Graphics g, List<? extends AbstractFlyingObject> objects) {
         if (objects.size() == 0) {
