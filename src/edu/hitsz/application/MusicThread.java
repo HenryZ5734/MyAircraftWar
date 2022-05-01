@@ -13,7 +13,6 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.UnsupportedAudioFileException;
-import javax.sound.sampled.DataLine.Info;
 
 /**
  * @author hitsz
@@ -22,11 +21,14 @@ public class MusicThread extends Thread {
 
 
     //音频文件名
-    private String filename;
+    private final String filename;
     private AudioFormat audioFormat;
     private byte[] samples;
+    private Boolean needRecycle;
+    private Boolean stopFlag = false;
 
-    public MusicThread(String filename) {
+    public MusicThread(String filename, Boolean needRecycle) {
+        this.needRecycle = needRecycle;
         //初始化filename
         this.filename = filename;
         reverseMusic();
@@ -64,7 +66,7 @@ public class MusicThread extends Thread {
     public void play(InputStream source) {
         int size = (int) (audioFormat.getFrameSize() * audioFormat.getSampleRate());
         byte[] buffer = new byte[size];
-        //源数据行SoureDataLine是可以写入数据的数据行
+        //源数据行SourceDataLine是可以写入数据的数据行
         SourceDataLine dataLine = null;
         //获取受数据行支持的音频格式DataLine.info
         DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
@@ -78,29 +80,38 @@ public class MusicThread extends Thread {
         dataLine.start();
         try {
             int numBytesRead = 0;
-            while (numBytesRead != -1) {
-				//从音频流读取指定的最大数量的数据字节，并将其放入缓冲区中
+            while (numBytesRead != -1 && !stopFlag) {
+                //从音频流读取指定的最大数量的数据字节，并将其放入缓冲区中
                 numBytesRead =
                         source.read(buffer, 0, buffer.length);
-				//通过此源数据行将数据写入混频器
+                //通过此源数据行将数据写入混频器
                 if (numBytesRead != -1) {
                     dataLine.write(buffer, 0, numBytesRead);
                 }
             }
-
         } catch (IOException ex) {
             ex.printStackTrace();
         }
-
         dataLine.drain();
         dataLine.close();
+    }
 
+    public void setStopFlag(Boolean stopFlag) {
+        this.stopFlag = stopFlag;
     }
 
     @Override
     public void run() {
         InputStream stream = new ByteArrayInputStream(samples);
-        play(stream);
+        if(needRecycle){
+            while(true){
+                play(stream);
+                stream = new ByteArrayInputStream(samples);
+            }
+        }
+        else{
+            play(stream);
+        }
     }
 }
 

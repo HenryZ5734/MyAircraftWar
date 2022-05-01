@@ -8,6 +8,7 @@ import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
 import edu.hitsz.items.AbstractItems;
+import edu.hitsz.items.ItemBomb;
 import edu.hitsz.items.ItemFire;
 
 import javax.swing.*;
@@ -34,11 +35,14 @@ public abstract class BaseGame extends JPanel {
      */
     private final ScheduledExecutorService executorService;
     private Thread calTimeThread = null;
+    private MusicThread bossMusic;
+    private final MusicThread gameOverMusic;
+    private final MusicThread backgroundMusic;
 
     /**
      * 时间间隔(ms)，控制刷新频率
      */
-    private int timeInterval = 40;
+    private final int timeInterval = 40;
 
     private final HeroAircraft heroAircraft;
     private final List<AbstractEnemy> enemyAircrafts;
@@ -51,9 +55,9 @@ public abstract class BaseGame extends JPanel {
     /**
      * 游戏难度相关参数
      */
-    protected static int bossAppearThreshold = 100;
-    protected static int enemyMaxNumber = 5;
-    protected static double eliteAppearThreshold = 0.6;
+    protected static int bossAppearThreshold;
+    protected static int enemyMaxNumber;
+    protected static double eliteAppearThreshold;
 
     private boolean gameOverFlag = false;
     private int time = 0;
@@ -66,8 +70,11 @@ public abstract class BaseGame extends JPanel {
     private int cycleTime = 0;
 
     public BaseGame() {
-        heroAircraft = HeroAircraft.getHeroAircraft();
 
+        gameOverMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\game_over.wav", false);
+        backgroundMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bgm.wav", true);
+
+        heroAircraft = HeroAircraft.getHeroAircraft();
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
@@ -94,6 +101,8 @@ public abstract class BaseGame extends JPanel {
      */
     public void action() {
 
+        backgroundMusic.start();
+
         // 定时任务：绘制、对象产生、碰撞判定、击毁及结束判定
         Runnable task = () -> {
 
@@ -106,15 +115,17 @@ public abstract class BaseGame extends JPanel {
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     double i = Math.random();
                     if(bossAppearFlag >= bossAppearThreshold){
-                        bossAppearFlag -= 100;
+                        bossAppearFlag -= bossAppearThreshold;
                         EnemyCreator enemyCreator = new BossCreator();
                         enemyAircrafts.add(enemyCreator.createEnemy(
-                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
+                                (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.BOSS_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2),
                                 1,
                                 0,
                                 200
                         ));
+                        bossMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bgm_boss.wav", true);
+                        bossMusic.start();
                     }
                     else if(i<eliteAppearThreshold){
                         EnemyCreator enemyCreator = new MobCreator();
@@ -157,7 +168,7 @@ public abstract class BaseGame extends JPanel {
             // 后处理
             postProcessAction();
 
-            //每个时刻重绘界面
+            // 每个时刻重绘界面
             repaint();
 
             // 游戏结束检查
@@ -171,6 +182,8 @@ public abstract class BaseGame extends JPanel {
                     Main.MAIN_LOCK.notify();
                 }
 
+                bossMusic.setStopFlag(true);
+                gameOverMusic.start();
                 System.out.println("Game Over!");
             }
 
@@ -183,6 +196,8 @@ public abstract class BaseGame extends JPanel {
         executorService.scheduleWithFixedDelay(task, timeInterval, timeInterval, TimeUnit.MILLISECONDS);
 
     }
+
+
 
     //***********************
     //      Action 各部分
@@ -257,7 +272,7 @@ public abstract class BaseGame extends JPanel {
             if (bullet.notValid()) {
                 continue;
             }
-            for (AbstractAircraft enemyAircraft : enemyAircrafts) {
+            for (AbstractEnemy enemyAircraft : enemyAircrafts) {
                 if (enemyAircraft.notValid()) {
                     // 已被其他子弹击毁的敌机，不再检测
                     // 避免多个子弹重复击毁同一敌机的判定
@@ -267,15 +282,19 @@ public abstract class BaseGame extends JPanel {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
                     // 一次只能有一架boss机
+                    MusicThread hitMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bullet_hit.wav", false);
+                    hitMusic.start();
+
                     bullet.vanish();
                     enemyAircraft.decreaseHp(bullet.getPower());
                     if(enemyAircraft instanceof BossEnemy && enemyAircraft.getHp()==0){
                         BossEnemy.exist = false;
+                        bossMusic.setStopFlag(true);
                     }
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
                         if(!(enemyAircraft instanceof MobEnemy)){
-                            AbstractItems itemTemp = ((AbstractEnemy)enemyAircraft).dropItems();
+                            AbstractItems itemTemp = (enemyAircraft).dropItems();
                             if(itemTemp != null){
                                 items.add(itemTemp);
                             }
@@ -307,19 +326,29 @@ public abstract class BaseGame extends JPanel {
             if(item.notValid()) {
                 continue;
             } else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
-                if(item instanceof ItemFire){
+                Thread supplyMusic;
+                if(item instanceof ItemBomb){
+                    Thread bombMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bomb_explosion.wav", false);
+                    bombMusic.start();
+                }
+                else if(item instanceof ItemFire){
                     if(heroAircraft.getFireActivated()){
                         calTimeThread.interrupt();
                     }
                     calTimeThread = new CalTimeThread();
                     calTimeThread.start();
+                    supplyMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\get_supply.wav", false);
+                    supplyMusic.start();
+                }
+                else{
+                    supplyMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\get_supply.wav", false);
+                    supplyMusic.start();
                 }
                 item.activateItem(heroAircraft);
                 item.vanish();
             }
         }
     }
-
 
     /**
      * 后处理：
