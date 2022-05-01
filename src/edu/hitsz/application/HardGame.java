@@ -9,7 +9,7 @@ public class HardGame extends BaseGame{
     // 设置游戏参数
     static{
         enemyMaxNumber = 5;
-        bossAppearThreshold = 100;
+        bossAppearThreshold = 300;
         eliteAppearThreshold = 0.6;
         // TODO 设置飞机参数
     }

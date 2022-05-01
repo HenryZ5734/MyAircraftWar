@@ -10,7 +10,7 @@ public class EasyGame extends BaseGame{
     // 设置游戏参数
     static{
         enemyMaxNumber = 5;
-        bossAppearThreshold = 100;
+        bossAppearThreshold = 500;
         eliteAppearThreshold = 0.6;
         // TODO 设置飞机参数
     }

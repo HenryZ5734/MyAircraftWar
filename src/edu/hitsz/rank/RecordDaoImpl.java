@@ -21,6 +21,9 @@ public class RecordDaoImpl implements RecordDao{
                 rank = (ArrayList<Record>) ois.readObject();
                 ois.close();
             }
+            else{
+                f.createNewFile();
+            }
 
             // 增加新的记录
             rank.add(new Record(name, score));

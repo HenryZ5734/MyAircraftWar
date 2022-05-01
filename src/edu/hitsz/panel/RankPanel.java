@@ -19,12 +19,14 @@ public class RankPanel {
     private JTable rankTable;
     private JScrollPane rankScroll;
     private JLabel rankTitle;
+    private JLabel difficultyLabel;
 
     private final String difficulty;
     private DefaultTableModel model;
 
     public RankPanel(String difficulty) {
         this.difficulty = difficulty;
+        difficultyLabel.setText("难度：" + this.difficulty);
         file2Table(difficulty);
         deleteButton.addActionListener(new ActionListener() {
             @Override
@@ -52,9 +54,14 @@ public class RankPanel {
             File f = openFile(difficulty);
 
             // 读取文件中的对象
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-            rank = (ArrayList<Record>) ois.readObject();
-            ois.close();
+            if(f.length() != 0){
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
+                rank = (ArrayList<Record>) ois.readObject();
+                ois.close();
+            }
+            else{
+                rank = new ArrayList<>();
+            }
 
             // 将List转化为Model
             for(var record : rank){
