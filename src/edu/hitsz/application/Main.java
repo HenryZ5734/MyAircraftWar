@@ -60,6 +60,7 @@ public class Main {
         else{
             game = new HardGame();
         }
+        game.setPlayMusic(startPanel.getPlayMusic());
         frame.setContentPane(game);
         frame.setVisible(true);
         game.action();

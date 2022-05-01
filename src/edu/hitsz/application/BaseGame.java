@@ -36,8 +36,9 @@ public abstract class BaseGame extends JPanel {
     private final ScheduledExecutorService executorService;
     private Thread calTimeThread = null;
     private MusicThread bossMusic;
-    private final MusicThread gameOverMusic;
-    private final MusicThread backgroundMusic;
+    private MusicThread gameOverMusic;
+    private MusicThread backgroundMusic;
+    private Boolean playMusic;
 
     /**
      * 时间间隔(ms)，控制刷新频率
@@ -71,9 +72,6 @@ public abstract class BaseGame extends JPanel {
 
     public BaseGame() {
 
-        gameOverMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\game_over.wav", false);
-        backgroundMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bgm.wav", true);
-
         heroAircraft = HeroAircraft.getHeroAircraft();
         enemyAircrafts = new LinkedList<>();
         heroBullets = new LinkedList<>();
@@ -101,7 +99,10 @@ public abstract class BaseGame extends JPanel {
      */
     public void action() {
 
-        backgroundMusic.start();
+        if(playMusic){
+            backgroundMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bgm.wav", true);
+            backgroundMusic.start();
+        }
 
         // 定时任务：绘制、对象产生、碰撞判定、击毁及结束判定
         Runnable task = () -> {
@@ -124,8 +125,10 @@ public abstract class BaseGame extends JPanel {
                                 0,
                                 200
                         ));
-                        bossMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bgm_boss.wav", true);
-                        bossMusic.start();
+                        if(playMusic){
+                            bossMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bgm_boss.wav", true);
+                            bossMusic.start();
+                        }
                     }
                     else if(i<eliteAppearThreshold){
                         EnemyCreator enemyCreator = new MobCreator();
@@ -182,8 +185,11 @@ public abstract class BaseGame extends JPanel {
                     Main.MAIN_LOCK.notify();
                 }
 
-                bossMusic.setStopFlag(true);
-                gameOverMusic.start();
+                if(playMusic){
+                    bossMusic.setStopFlag(true);
+                    gameOverMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\game_over.wav", false);
+                    gameOverMusic.start();
+                }
                 System.out.println("Game Over!");
             }
 
@@ -282,14 +288,18 @@ public abstract class BaseGame extends JPanel {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
                     // 一次只能有一架boss机
-                    MusicThread hitMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bullet_hit.wav", false);
-                    hitMusic.start();
+                    if(playMusic){
+                        MusicThread hitMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bullet_hit.wav", false);
+                        hitMusic.start();
+                    }
 
                     bullet.vanish();
                     enemyAircraft.decreaseHp(bullet.getPower());
                     if(enemyAircraft instanceof BossEnemy && enemyAircraft.getHp()==0){
                         BossEnemy.exist = false;
-                        bossMusic.setStopFlag(true);
+                        if(playMusic){
+                            bossMusic.setStopFlag(true);
+                        }
                     }
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
@@ -326,8 +336,8 @@ public abstract class BaseGame extends JPanel {
             if(item.notValid()) {
                 continue;
             } else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
-                Thread supplyMusic;
-                if(item instanceof ItemBomb){
+                MusicThread supplyMusic;
+                if(playMusic && item instanceof ItemBomb){
                     Thread bombMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bomb_explosion.wav", false);
                     bombMusic.start();
                 }
@@ -337,10 +347,12 @@ public abstract class BaseGame extends JPanel {
                     }
                     calTimeThread = new CalTimeThread();
                     calTimeThread.start();
-                    supplyMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\get_supply.wav", false);
-                    supplyMusic.start();
+                    if(playMusic){
+                        supplyMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\get_supply.wav", false);
+                        supplyMusic.start();
+                    }
                 }
-                else{
+                else if(playMusic){
                     supplyMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\get_supply.wav", false);
                     supplyMusic.start();
                 }
@@ -348,6 +360,10 @@ public abstract class BaseGame extends JPanel {
                 item.vanish();
             }
         }
+    }
+
+    public void setPlayMusic(Boolean playMusic) {
+        this.playMusic = playMusic;
     }
 
     /**

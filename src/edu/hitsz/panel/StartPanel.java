@@ -17,6 +17,7 @@ public class StartPanel {
     private JPanel mainPanel;
     private JLabel musicLabel;
     private String difficulty;
+    private Boolean playMusic=true;
 
     public StartPanel() {
 
@@ -53,13 +54,22 @@ public class StartPanel {
         music.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                // TODO
+                if(music.getSelectedIndex() == 0){
+                    playMusic = true;
+                }
+                else{
+                    playMusic = false;
+                }
             }
         });
     }
 
     public String getDifficulty() {
         return difficulty;
+    }
+
+    public Boolean getPlayMusic() {
+        return playMusic;
     }
 
     public JPanel getMainPanel() {
