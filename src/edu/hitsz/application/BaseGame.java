@@ -14,6 +14,7 @@ import edu.hitsz.items.ItemFire;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
@@ -50,6 +51,7 @@ public abstract class BaseGame extends JPanel {
     private final List<BaseBullet> heroBullets;
     private final List<BaseBullet> enemyBullets;
     private final List<AbstractItems> items;
+    private final List<AbstractItems> itemBombs;
     private int bossAppearFlag = 0;
     private int score = 0;
 
@@ -77,6 +79,8 @@ public abstract class BaseGame extends JPanel {
         heroBullets = new LinkedList<>();
         enemyBullets = new LinkedList<>();
         items = new LinkedList<>();
+        itemBombs = new LinkedList<>();
+
 
         //Scheduled 线程池，用于定时任务调度
         ThreadFactory gameThread = new ThreadFactory() {
@@ -132,23 +136,31 @@ public abstract class BaseGame extends JPanel {
                     }
                     else if(i<eliteAppearThreshold){
                         EnemyCreator enemyCreator = new MobCreator();
-                        enemyAircrafts.add(enemyCreator.createEnemy(
+                        AbstractEnemy mob = enemyCreator.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.MOB_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2),
                                 0,
                                 10,
                                 30
-                        ));
+                        );
+                        enemyAircrafts.add(mob);
+                        for(AbstractItems bomb : itemBombs){
+                            ((ItemBomb)bomb).addSubscriber(mob);
+                        }
                     }
                     else{
                         EnemyCreator enemyCreator = new EliteCreator();
-                        enemyAircrafts.add(enemyCreator.createEnemy(
+                        AbstractEnemy elite = enemyCreator.createEnemy(
                                 (int) (Math.random() * (Main.WINDOW_WIDTH - ImageManager.ELITE_ENEMY_IMAGE.getWidth())),
                                 (int) (Math.random() * Main.WINDOW_HEIGHT * 0.2),
                                 2,
                                 10,
                                 30
-                        ));
+                        );
+                        enemyAircrafts.add(elite);
+                        for(AbstractItems bomb : itemBombs){
+                            ((ItemBomb)bomb).addSubscriber(elite);
+                        }
                     }
 
                 }
@@ -222,9 +234,14 @@ public abstract class BaseGame extends JPanel {
 
     private void shootAction() {
         // TODO 敌机射击
+        List<BaseBullet> bullets;
         for(AbstractAircraft enemyAircraft : enemyAircrafts ){
             if(!(enemyAircraft instanceof MobEnemy)) {
-                enemyBullets.addAll(enemyAircraft.shoot());
+                bullets = enemyAircraft.shoot();
+                enemyBullets.addAll(bullets);
+                for(AbstractItems bomb : itemBombs){
+                    ((ItemBomb)bomb).addAllSubscriber(bullets);
+                }
             }
         }
         // 英雄射击
@@ -265,15 +282,18 @@ public abstract class BaseGame extends JPanel {
         for(BaseBullet bullet: enemyBullets){
             if(bullet.notValid()) {
                 continue;
-            } else{
-                if(bullet.crash(heroAircraft)){
-                    // 英雄机损失生命值
-                    heroAircraft.decreaseHp(bullet.getPower());
-                    bullet.vanish();
+            }
+            else if(bullet.crash(heroAircraft)){
+                // 英雄机损失生命值
+                heroAircraft.decreaseHp(bullet.getPower());
+                for(AbstractItems bomb : itemBombs){
+                    ((ItemBomb)bomb).deleteSubscriber(bullet);
                 }
+                bullet.vanish();
             }
         }
         // 英雄子弹攻击敌机
+        AbstractItems newItem = null;
         for (BaseBullet bullet : heroBullets) {
             if (bullet.notValid()) {
                 continue;
@@ -288,6 +308,7 @@ public abstract class BaseGame extends JPanel {
                     // 敌机撞击到英雄机子弹
                     // 敌机损失一定生命值
                     // 一次只能有一架boss机
+                    // 控制子弹击中敌机音效
                     if(playMusic){
                         MusicThread hitMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bullet_hit.wav", false);
                         hitMusic.start();
@@ -304,9 +325,17 @@ public abstract class BaseGame extends JPanel {
                     if (enemyAircraft.notValid()) {
                         // TODO 获得分数，产生道具补给
                         if(!(enemyAircraft instanceof MobEnemy)){
-                            AbstractItems itemTemp = (enemyAircraft).dropItems();
-                            if(itemTemp != null){
-                                items.add(itemTemp);
+                            newItem = enemyAircraft.dropItems();
+                            if(newItem != null){
+                                items.add(newItem);
+                            }
+                            if(newItem instanceof ItemBomb){
+                                itemBombs.add(newItem);
+                            }
+                        }
+                        if(!(enemyAircraft instanceof BossEnemy)){
+                            for(AbstractItems bomb : itemBombs){
+                                ((ItemBomb)bomb).deleteSubscriber(enemyAircraft);
                             }
                         }
                         if(enemyAircraft instanceof MobEnemy){
@@ -331,6 +360,20 @@ public abstract class BaseGame extends JPanel {
             }
         }
 
+        // 若新增道具为炸弹道具，需要将当前精英机，敌机子弹加入炸弹的订阅者列表
+        if(newItem instanceof ItemBomb){
+            for(AbstractEnemy aircraft: enemyAircrafts){
+                if(!aircraft.notValid() && !(aircraft instanceof BossEnemy)){
+                    ((ItemBomb) newItem).addSubscriber(aircraft);
+                }
+            }
+            for(BaseBullet bullet1: enemyBullets){
+                if(!bullet1.notValid()){
+                    ((ItemBomb) newItem).addSubscriber(bullet1);
+                }
+            }
+        }
+
         // 道具生效+火力道具计时
         for(AbstractItems item : items){
             if(item.notValid()) {
@@ -338,7 +381,7 @@ public abstract class BaseGame extends JPanel {
             } else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
                 MusicThread supplyMusic;
                 if(playMusic && item instanceof ItemBomb){
-                    Thread bombMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bomb_explosion.wav", false);
+                    MusicThread bombMusic = new MusicThread(System.getProperty("user.dir") + "\\src\\videos\\bomb_explosion.wav", false);
                     bombMusic.start();
                 }
                 else if(item instanceof ItemFire){
@@ -369,8 +412,10 @@ public abstract class BaseGame extends JPanel {
     /**
      * 后处理：
      * 1. 删除无效的子弹
-     * 2. 删除无效的敌机
-     * 3. 检查英雄机生存
+     * 2. 检查英雄机生存
+     * 3. 删除无效的敌机
+     * 4. 删除无效道具
+     * 5. 删除无效炸弹
      * <p>
      * 无效的原因可能是撞击或者飞出边界
      */
@@ -379,6 +424,7 @@ public abstract class BaseGame extends JPanel {
         heroBullets.removeIf(AbstractFlyingObject::notValid);
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
         items.removeIf(AbstractFlyingObject::notValid);
+        itemBombs.removeIf(AbstractItems::notValid);
     }
 
 
