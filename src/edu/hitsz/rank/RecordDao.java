@@ -23,4 +23,9 @@ public interface RecordDao {
      * */
     void deleteRecordByIndex(int index, String difficulty);
 
+    /**
+     * 获取文件中的记录
+     * @param file 要读取的文件
+     */
+    ArrayList<Record> getRecordsFromFile(File file);
 }

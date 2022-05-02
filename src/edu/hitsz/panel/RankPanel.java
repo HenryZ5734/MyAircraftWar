@@ -22,19 +22,24 @@ public class RankPanel {
     private JLabel difficultyLabel;
 
     private final String difficulty;
+    public RecordDaoImpl recordDao = new RecordDaoImpl();
     private DefaultTableModel model;
 
     public RankPanel(String difficulty) {
+
         this.difficulty = difficulty;
         difficultyLabel.setText("难度：" + this.difficulty);
+
+        // 初始化表格为原有数据
         file2Table(difficulty);
+
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int row = rankTable.getSelectedRow();
 
                 // 从文件中删去记录
-                deleteRecordInFile(row, difficulty);
+                recordDao.deleteRecordByIndex(row, difficulty);
 
                 // 更新表格模型
                 file2Table(difficulty);
@@ -50,18 +55,12 @@ public class RankPanel {
             ArrayList<Record> rank;
             String[] columnName = {"排名", "姓名", "分数", "时间"};
             String[][] tableData = new String[100][];
+
             // 打开文件
             File f = openFile(difficulty);
 
             // 读取文件中的对象
-            if(f.length() != 0){
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-                rank = (ArrayList<Record>) ois.readObject();
-                ois.close();
-            }
-            else{
-                rank = new ArrayList<>();
-            }
+            rank = recordDao.getRecordsFromFile(f);
 
             // 将List转化为Model
             for(var record : rank){
@@ -88,11 +87,6 @@ public class RankPanel {
         }
     }
 
-    public void deleteRecordInFile(int row, String difficulty){
-        RecordDaoImpl recordDao = new RecordDaoImpl();
-        recordDao.deleteRecordByIndex(row, difficulty);
-    }
-
     public void getUserName(int score){
         String name = JOptionPane.showInputDialog(
                 mainPanel,
@@ -109,7 +103,6 @@ public class RankPanel {
             );
 
         }
-        RecordDaoImpl recordDao = new RecordDaoImpl();
         recordDao.addRecord(name, score, difficulty);
         file2Table(difficulty);
         rankTable.repaint();

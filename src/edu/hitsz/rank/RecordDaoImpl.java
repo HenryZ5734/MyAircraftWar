@@ -12,18 +12,11 @@ public class RecordDaoImpl implements RecordDao{
     @Override
     public void addRecord(String name, int score, String difficulty) {
         try{
-            ArrayList<Record> rank = new ArrayList<>();
+            ArrayList<Record> rank;
             File f = openFile(difficulty);
 
             // 读入原有数据
-            if(f.length() != 0){
-                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-                rank = (ArrayList<Record>) ois.readObject();
-                ois.close();
-            }
-            else{
-                f.createNewFile();
-            }
+            rank = getRecordsFromFile(f);
 
             // 增加新的记录
             rank.add(new Record(name, score));
@@ -50,12 +43,12 @@ public class RecordDaoImpl implements RecordDao{
             File f = openFile(difficulty);
 
             // 读取文件中的对象
-            ObjectInputStream ois = new ObjectInputStream(new FileInputStream(f));
-            rank = (ArrayList<Record>) ois.readObject();
-            ois.close();
+            rank = getRecordsFromFile(f);
 
-            // 删除记录并更新排名
+            // 删除记录
             rank.remove(index);
+
+            // 更新排名
             sortByScoreDescending(rank);
 
             // 写回文件
@@ -66,6 +59,24 @@ public class RecordDaoImpl implements RecordDao{
         catch(Exception e){
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public ArrayList<Record> getRecordsFromFile(File file) {
+        ArrayList<Record> rank = new ArrayList<>();
+        try{
+            // 读取文件中的对象
+            if(file.length() != 0){
+                ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file));
+                rank = (ArrayList<Record>) ois.readObject();
+                ois.close();
+            }
+            else{
+                file.createNewFile();
+            }
+        }
+        catch(Exception ignored){}
+        return rank;
     }
 
     public void sortByScoreDescending(ArrayList<Record> rank){
