@@ -13,7 +13,8 @@ public class EasyGame extends BaseGame{
         enemyMaxNumber = 5;
         dropItemThresh = new double[]{0.2, 0.5, 0.7};
         eliteAppearThreshold = 0.5;
-        cycleDuration = 400;
+        enemyCycleDuration = 400;
+        heroCycleDuration = 250;
         mobParam.putAll(Map.of(
                 "speedX", 0,
                 "speedY", 8,

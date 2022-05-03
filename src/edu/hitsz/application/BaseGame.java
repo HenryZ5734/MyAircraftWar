@@ -47,7 +47,8 @@ public abstract class BaseGame extends JPanel {
      * 3. 指示距上次敌机产生的时间
      */
     private final int timeInterval = 40;
-    private int cycleTime = 0;
+    private int enemyCycleTime = 0;
+    private int heroCycleTime = 0;
     protected int time = 0;
 
 
@@ -76,7 +77,8 @@ public abstract class BaseGame extends JPanel {
     protected static int enemyMaxNumber;
     protected static double eliteAppearThreshold;
     protected static double[] dropItemThresh;
-    protected static int cycleDuration = 600;
+    protected static int enemyCycleDuration;
+    protected static int heroCycleDuration;
     protected static int difficultyUpdateCycle = 15000;
     protected static HashMap<String, Integer> mobParam = new HashMap<>();
     protected static HashMap<String, Integer> eliteParam = new HashMap<>();
@@ -123,13 +125,18 @@ public abstract class BaseGame extends JPanel {
             time += timeInterval;
 
             // 周期性执行（控制频率）
-            if (timeCountAndNewCycleJudge()) {
+            if (timeCountAndNewCycleJudge(enemyCycleTime, enemyCycleDuration)) {
                 // 新敌机产生
                 if (enemyAircrafts.size() < enemyMaxNumber) {
                     generateEnemy();
                 }
-                // 飞机射出子弹
-                shootAction();
+                // 敌机射出子弹
+                enemyShootAction();
+            }
+
+            if (timeCountAndNewCycleJudge(heroCycleTime, heroCycleDuration)) {
+                // 英雄机射出子弹
+                heroShootAction();
             }
 
             // 子弹移动
@@ -168,6 +175,7 @@ public abstract class BaseGame extends JPanel {
     //***********************
     //      产生敌机各部分
     //***********************
+
     protected abstract void generateEnemy();
 
     protected abstract void generateBoss();
@@ -213,19 +221,31 @@ public abstract class BaseGame extends JPanel {
     //      Action 各部分
     //***********************
 
-    private boolean timeCountAndNewCycleJudge() {
+    private boolean timeCountAndNewCycleJudge(int cycleTime, int cycleDuration) {
         cycleTime += timeInterval;
         if (cycleTime >= cycleDuration && cycleTime - timeInterval < cycleTime) {
             // 跨越到新的周期
             cycleTime %= cycleDuration;
+            if(cycleDuration == enemyCycleDuration){
+                this.enemyCycleTime = cycleTime;
+            }
+            else{
+                this.heroCycleTime = cycleTime;
+            }
             return true;
         } else {
+            if(cycleDuration == enemyCycleDuration){
+                this.enemyCycleTime = cycleTime;
+            }
+            else{
+                this.heroCycleTime = cycleTime;
+            }
             return false;
         }
     }
 
-    private void shootAction() {
-        // TODO 敌机射击
+    private void enemyShootAction() {
+        // 敌机射击
         List<BaseBullet> bullets;
         for(AbstractAircraft enemyAircraft : enemyAircrafts ){
             if(!(enemyAircraft instanceof MobEnemy)) {
@@ -236,6 +256,9 @@ public abstract class BaseGame extends JPanel {
                 }
             }
         }
+    }
+
+    private void heroShootAction(){
         // 英雄射击
         heroBullets.addAll(heroAircraft.shoot());
     }

@@ -17,7 +17,8 @@ public class NormalGame extends BaseGame{
         bossAppearThreshold = 500;
         dropItemThresh = new double[]{0.3, 0.6, 0.8};
         eliteAppearThreshold = 0.6;
-        cycleDuration = 400;
+        enemyCycleDuration = 400;
+        heroCycleDuration = 250;
         mobParam.putAll(Map.of(
                 "speedX", 0,
                 "speedY", 8,
@@ -69,21 +70,23 @@ public class NormalGame extends BaseGame{
 
     @Override
     protected void difficultyUpdateCheck() {
-        // 普通敌机血量小于120时靠增加血量增强难度
-        if (mobParam.get("hp") < 120 && time > 0 && time % difficultyUpdateCycle == 0) {
-            mobParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
-            eliteParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
-            bossParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
-            System.out.println("难度增强，敌机血量增加1.3倍");
-        }
-        // 否则靠增加敌机数量上限增加难度,最大不超过12
-        else if(enemyMaxNumber <= 12){
-            enemyMaxNumber += 1;
-            System.out.println("难度增强，敌机数量上限+1");
-        }
-        // 否则降低boss出现阈值
-        else{
-            bossAppearThreshold = Math.max(bossAppearFlag-50, 200);
+        if(time > 0 && time % difficultyUpdateCycle == 0){
+            // 普通敌机血量小于120时靠增加血量增强难度
+            if (mobParam.get("hp") < 120) {
+                mobParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
+                eliteParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
+                bossParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
+                System.out.println("难度增强，敌机血量增加1.3倍");
+            }
+            // 否则靠增加敌机数量上限增加难度,最大不超过12
+            else if(enemyMaxNumber <= 12){
+                enemyMaxNumber += 1;
+                System.out.println("难度增强，敌机数量上限+1");
+            }
+            // 否则降低boss出现阈值
+            else{
+                bossAppearThreshold = Math.max(bossAppearFlag-50, 200);
+            }
         }
     }
 

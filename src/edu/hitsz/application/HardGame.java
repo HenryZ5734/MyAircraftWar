@@ -16,7 +16,8 @@ public class HardGame extends BaseGame{
         bossAppearThreshold = 400;
         dropItemThresh = new double[]{0.4, 0.7, 0.9};
         eliteAppearThreshold = 0.5;
-        cycleDuration = 200;
+        enemyCycleDuration = 400;
+        heroCycleDuration = 250;
         mobParam.putAll(Map.of(
                 "speedX", 0,
                 "speedY", 8,
