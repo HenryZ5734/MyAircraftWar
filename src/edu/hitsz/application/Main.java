@@ -63,7 +63,7 @@ public class Main {
         game.setPlayMusic(startPanel.getPlayMusic());
         frame.setContentPane(game);
         frame.setVisible(true);
-        game.action();
+        game.action(difficulty);
 
         synchronized(MAIN_LOCK){
             while(!game.isGameOverFlag()){

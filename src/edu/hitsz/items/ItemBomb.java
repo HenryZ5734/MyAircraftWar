@@ -33,6 +33,10 @@ public class ItemBomb extends AbstractItems{
         }
     }
 
+    public ArrayList<AbstractFlyingObject> getSubscriber() {
+        return subscriber;
+    }
+
     @Override
     public void activateItem(HeroAircraft heroAircraft) {
         notifySubscriber();

@@ -49,7 +49,7 @@ class EliteEnemyTest {
     @DisplayName("测试精英机掉落道具的功能")
     @Test
     void dropItems() {
-        Object item = eliteEnemy.dropItems();
+        Object item = eliteEnemy.dropItems(new double[]{0.4, 0.6, 0.9});
         if(item!=null){
             assertInstanceOf(AbstractItems.class, item);
         }else{
