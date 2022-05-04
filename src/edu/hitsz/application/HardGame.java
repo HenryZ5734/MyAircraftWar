@@ -31,7 +31,7 @@ public class HardGame extends BaseGame{
         bossParam.putAll(Map.of(
                 "speedX", 2,
                 "speedY", 0,
-                "hp",     200
+                "hp",     400
         ));
     }
 
