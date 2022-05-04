@@ -1,0 +1,25 @@
+@startuml
+
+abstract class AbstractItem{}
+abstract class AbstractEnemy extends AbstractFlyingObject{}
+class EnemyBullet extends AbstractFlyingObject{}
+class EliteEnemy extends AbstractEnemy{}
+class MobEnemy extends AbstractEnemy{}
+
+abstract class AbstractFlyingObject{
++ vanish():void
+}
+
+class ItemBomb extends AbstractItem{
+- subscriber:ArrayList<AbstractFlyingObject>
++ addSubscriber(AbstractFlyingObject):void
++ addAllSubscriber(List<BaseBullet>):void
++ deleteSubscriber(AbstractFlyingObject):void
++ getSubscriber():ArrayList<AbstractFlyingObject>
++ activateItem(HeroAircraft):void
+- notifySubscriber():void
+}
+
+ItemBomb o--> AbstractFlyingObject
+
+@enduml

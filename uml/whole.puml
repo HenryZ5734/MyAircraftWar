@@ -1,0 +1,98 @@
+@startuml
+class ItemBomb {
+- ArrayList<AbstractFlyingObject> subscriber
++ void addSubscriber(AbstractFlyingObject)
++ void addAllSubscriber(List<BaseBullet>)
++ void deleteSubscriber(AbstractFlyingObject)
+- void notifySubscriber()
++ ArrayList<AbstractFlyingObject> getSubscriber()
++ void activateItem(HeroAircraft)
+}
+abstract class AbstractAircraft {
+# int maxHp
+# int hp
++ void decreaseHp(int)
++ int getHp()
++ {abstract}List<BaseBullet> shoot()
+}
+abstract class AbstractFlyingObject {
+# int locationX
+# int locationY
+# int speedX
+# int speedY
+# BufferedImage image
+# int width
+# int height
+# boolean isValid
++ void forward()
++ boolean crash(AbstractFlyingObject)
++ int getLocationX()
++ int getLocationY()
++ void setLocation(double,double)
++ int getSpeedY()
++ BufferedImage getImage()
++ int getWidth()
++ int getHeight()
++ boolean notValid()
++ void vanish()
+}
+class ItemFire {
++ void activateItem(HeroAircraft)
+}
+class EnemyBullet {
+}
+abstract class AbstractItem {
++ void forward()
++ {abstract}void activateItem(HeroAircraft)
+}
+class ItemBlood {
+- int addHp
++ void activateItem(HeroAircraft)
+}
+class BaseBullet {
+- int power
++ void forward()
++ int getPower()
+}
+class HeroBullet {
+}
+class MobEnemy {
++ List<BaseBullet> shoot()
+}
+class HeroAircraft {
+- boolean fireActivated
+- {static} HeroAircraft heroAircraft
++ {static} HeroAircraft getHeroAircraft()
++ void increaseHp(int)
++ void setFireActivated(Boolean)
++ Boolean getFireActivated()
++ void forward()
++ List<BaseBullet> shoot()
+}
+class BossEnemy {
++ {static} boolean exist
++ List<BaseBullet> shoot()
+}
+abstract class AbstractEnemy {
++ AbstractItem dropItems(double[])
++ void forward()
+}
+class EliteEnemy {
++ List<BaseBullet> shoot()
+}
+
+
+AbstractItem <|-- ItemBomb
+AbstractFlyingObject <|-- AbstractAircraft
+AbstractItem <|-- ItemFire
+BaseBullet <|-- EnemyBullet
+AbstractFlyingObject <|-- AbstractItem
+AbstractItem <|-- ItemBlood
+AbstractFlyingObject <|-- BaseBullet
+BaseBullet <|-- HeroBullet
+AbstractEnemy <|-- MobEnemy
+AbstractAircraft <|-- HeroAircraft
+AbstractEnemy <|-- BossEnemy
+AbstractAircraft <|-- AbstractEnemy
+AbstractEnemy <|-- EliteEnemy
+@enduml

@@ -1,23 +1,16 @@
 @startuml
 
-Game ..> EnemyCreator
-Game ..> AbstractEnemy
-
-AbstractEnemy <|-- MobEnemy
-AbstractEnemy <|-- EliteEnemy
-AbstractEnemy <|-- BossEnemy
-
-EnemyCreator <|.. MobCreator
-EnemyCreator <|.. EliteCreator
-EnemyCreator <|.. BossCreator
+BaseGame ..> EnemyCreator
+BaseGame ..> AbstractEnemy
 
 MobCreator ..> MobEnemy
 EliteCreator ..> EliteEnemy
 BossCreator ..> BossEnemy
 
-class Game{
+abstract class BaseGame{
 
 }
+
 interface EnemyCreator{
     + {abstract}createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):AbstractEnemy
 }
@@ -25,34 +18,34 @@ interface EnemyCreator{
 abstract class AbstractEnemy{
     + AbstractEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
     + forward():void
-}
-
-class MobEnemy {
-    + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
-    + shoot():List<BaseBullet>
-}
-class EliteEnemy{
-    - shootNum:int
-    - power:int
-    - direction:int
-    + EliteAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
-    + shoot():List<BaseBullet>
     + drop_Items():AbstractItems
 }
 
-class BossEnemy{
-
+class MobEnemy extends AbstractEnemy{
+    + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + shoot():List<BaseBullet>
+}
+class EliteEnemy extends AbstractEnemy{
+    + EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + shoot():List<BaseBullet>
 }
 
-class MobCreator{
+class BossEnemy extends AbstractEnemy{
+    + {static}exist:Boolean
+    + BossEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + shoot():List<BaseBullet>
+}
+
+class MobCreator implements EnemyCreator{
     + createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):MobEnemy
 }
 
-class EliteCreator{
+class EliteCreator implements EnemyCreator{
+    - {static}direction:int
     + createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):EliteEnemy
 }
 
-class BossCreator{
+class BossCreator implements EnemyCreator{
     + createEnemy(int locationX, int locationY, int speedX, int speedY, int hp):BossEnemy
 }
 

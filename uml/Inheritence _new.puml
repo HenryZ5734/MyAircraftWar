@@ -1,8 +1,7 @@
 @startuml
 'https://plantuml.com/class-diagram
 
-abstract class AbstractFlyingObject
-{
+abstract class AbstractFlyingObject{
     # locationX:int
     # locationY:int
     # speedX:int
@@ -25,8 +24,7 @@ abstract class AbstractFlyingObject
     + notValid():boolean
     + vanish():void
 }
-abstract class AbstractAircraft
-{
+abstract class AbstractAircraft extends AbstractFlyingObject{
 	# maxHp:int
     # hp:int
     + AbstractAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
@@ -35,93 +33,80 @@ abstract class AbstractAircraft
     + {abstract} shoot():List<BaseBullet>
  }
 
-abstract class BaseBullet
-{
+abstract class BaseBullet extends AbstractFlyingObject{
     - power:int
     + BaseBullet(int locationX, int locationY, int speedX, int speedY, int power)
     + forward():void
 	+ getPower():int
 }
 
-abstract class AbstractItems{
-    + AbstractItems(int locationX, int locationY, int speedX, int speedY)
+abstract class AbstractItem extends AbstractFlyingObject{
+    + AbstractItem(int locationX, int locationY, int speedX, int speedY)
     + {abstract}ActivateItem(HeroAircraft heroAircraft):void
     + forward():void
 }
 
-AbstractFlyingObject <|-- AbstractAircraft
-AbstractFlyingObject <|-- BaseBullet
-AbstractFlyingObject <|-- AbstractItems
-
-AbstractAircraft <|-- HeroAircraft
-AbstractAircraft <|-- AbstractEnemy
-
-AbstractEnemy <|-- MobEnemy
-AbstractEnemy <|-- EliteEnemy
-AbstractEnemy <|-- BossEnemy
-
-AbstractItems <|-- ItemBlood
-AbstractItems <|-- ItemFire
-AbstractItems <|-- ItemBomb
-
-BaseBullet <|-- HeroBullet
-BaseBullet <|-- EnemyBullet
-
-class HeroAircraft {
-    - shootNum:int
-    - power:int
-    - direction:int
-    - heroAircraft:HeroAircraft
-    - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
-    + {static}getHeroAircraft():HeroAircraft
-    + forward():void
-    + shoot():List<BaseBullet>
+class HeroAircraft extends AbstractAircraft{
+        - fireActivated:Boolean
+        - heroAircraft:HeroAircraft
+        - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+        + {static}getHeroAircraft():HeroAircraft
+        + increaseHp(int increment):void
+        + setFireActivated(Boolean flag):void
+        + getFireActivated():Boolean
+        + forward():void
+        + shoot():List<BaseBullet>
 }
 
-abstract class AbstractEnemy{
+abstract class AbstractEnemy extends AbstractAircraft{
+    + dropItems(double[] thresh):AbstractItem
     + AbstractEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
     + forward():void
 }
 
-class MobEnemy {
+class MobEnemy extends AbstractEnemy{
     + MobEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
     + shoot():List<BaseBullet>
 }
-class EliteEnemy{
-    - shootNum:int
-    - power:int
-    - direction:int
-    + EliteAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
+class EliteEnemy extends AbstractEnemy{
+    + EliteEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
     + shoot():List<BaseBullet>
-    + drop_Items():AbstractItems
 }
 
-class BossEnemy{
-
+class BossEnemy extends AbstractEnemy{
+    + {static}exist:Boolean
+    + BossEnemy(int locationX, int locationY, int speedX, int speedY, int hp)
+    + shoot():List<BaseBullet>
 }
 
-class ItemBlood{
+class ItemBlood extends AbstractItem{
     - add_Hp:int
     + ItemBlood(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
-class ItemFire{
-    - add_Fire:int
+class ItemFire extends AbstractItem{
     + ItemFire(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
-class ItemBomb{
+class ItemBomb extends AbstractItem{
+    - subscriber:ArrayList<AbstractFlyingObject>
     + ItemBomb(int locationX, int locationY, int speedX, int speedY)
+    + addSubscriber(AbstractFlyingObject obj):void
+    + addAllSubscriber(List<BaseBullet> obj):void
+    + deleteSubscriber(AbstractFlyingObject obj):void
+    + notifySubscriber():void
+    + getSubscriber():ArrayList<AbstractFlyingObject>
     + ActivateItem(HeroAircraft heroAircraft):void
 }
-class HeroBullet {
+
+class HeroBullet extends BaseBullet{
     + HeroBullet(int locationX, int locationY,
      int speedX, int speedY, int power)
 }
 
-class EnemyBullet {
+class EnemyBullet extends BaseBullet{
     + EnemyBullet(int locationX, int locationY,
      int speedX, int speedY, int power)
 }

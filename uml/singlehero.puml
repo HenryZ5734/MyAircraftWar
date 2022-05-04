@@ -1,9 +1,9 @@
 @startuml
 
 AbstractAircraft <|-- HeroAircraft
-Game ..> AbstractAircraft
+BaseGame ..> AbstractAircraft
 
-class Game{}
+abstract class BaseGame{}
 
 abstract class AbstractAircraft
 {
@@ -16,12 +16,13 @@ abstract class AbstractAircraft
 }
 
 class HeroAircraft {
-    - shootNum:int
-    - power:int
-    - direction:int
+    - fireActivated:Boolean
     - heroAircraft:HeroAircraft
     - HeroAircraft(int locationX, int locationY, int speedX, int speedY, int hp)
     + {static}getHeroAircraft():HeroAircraft
+    + increaseHp(int increment):void
+    + setFireActivated(Boolean flag):void
+    + getFireActivated():Boolean
     + forward():void
     + shoot():List<BaseBullet>
 }

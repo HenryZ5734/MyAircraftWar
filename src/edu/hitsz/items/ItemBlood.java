@@ -2,7 +2,7 @@ package edu.hitsz.items;
 
 import edu.hitsz.aircraft.HeroAircraft;
 
-public class ItemBlood extends AbstractItems{
+public class ItemBlood extends AbstractItem {
 
     private int addHp = 20;
 

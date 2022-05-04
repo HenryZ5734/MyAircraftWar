@@ -1,58 +1,56 @@
 @startuml
 
-class EliteEnemy{}
+abstract class AbstractEnemy{}
 
-abstract class AbstractItems{
-    + AbstractItems(int locationX, int locationY, int speedX, int speedY)
+abstract class AbstractItem{
+    + AbstractItem(int locationX, int locationY, int speedX, int speedY)
     + {abstract}ActivateItem(HeroAircraft heroAircraft):void
     + forward():void
 }
 
-interface ItemsCreator{
+interface ItemCreator{
     + {abstract}CreateItem(int locationX, int locationY, int speedX, int speedY):AbstractItems
 }
 
-EliteEnemy ..> ItemsCreator
-EliteEnemy ..> AbstractItems
+AbstractEnemy ..> ItemCreator
+AbstractEnemy ..> AbstractItem
 
-AbstractItems <|-- ItemBlood
-AbstractItems <|-- ItemFire
-AbstractItems <|-- ItemBomb
-
-ItemsCreator <|.. ItemBloodCreator
-ItemsCreator <|.. ItemFireCreator
-ItemsCreator <|.. ItemBombCreator
 
 ItemBloodCreator ..> ItemBlood
 ItemFireCreator ..> ItemFire
 ItemBombCreator ..> ItemBomb
 
-class ItemBlood{
+class ItemBlood extends AbstractItem{
     - add_Hp:int
     + ItemBlood(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
-class ItemFire{
-    - add_Fire:int
+class ItemFire extends AbstractItem{
     + ItemFire(int locationX, int locationY, int speedX, int speedY)
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
-class ItemBomb{
+class ItemBomb extends AbstractItem{
+    - subscriber:ArrayList<AbstractFlyingObject>
     + ItemBomb(int locationX, int locationY, int speedX, int speedY)
+    + addSubscriber(AbstractFlyingObject obj):void
+    + addAllSubscriber(List<BaseBullet> obj):void
+    + deleteSubscriber(AbstractFlyingObject obj):void
+    + notifySubscriber():void
+    + getSubscriber():ArrayList<AbstractFlyingObject>
     + ActivateItem(HeroAircraft heroAircraft):void
 }
 
-class ItemBloodCreator{
+class ItemBloodCreator implements ItemCreator{
     + CreateItem(int locationX, int locationY, int speedX, int speedY):ItemBlood
 }
 
-class ItemFireCreator{
+class ItemFireCreator implements ItemCreator{
     + CreateItem(int locationX, int locationY, int speedX, int speedY):ItemFire
 }
 
-class ItemBombCreator{
+class ItemBombCreator implements ItemCreator{
     + CreateItem(int locationX, int locationY, int speedX, int speedY):ItemBomb
 }
 

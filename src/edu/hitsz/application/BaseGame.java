@@ -6,7 +6,7 @@ import edu.hitsz.bullet.BaseBullet;
 import edu.hitsz.enemycreator.EliteCreator;
 import edu.hitsz.enemycreator.EnemyCreator;
 import edu.hitsz.enemycreator.MobCreator;
-import edu.hitsz.items.AbstractItems;
+import edu.hitsz.items.AbstractItem;
 import edu.hitsz.items.ItemBomb;
 import edu.hitsz.items.ItemFire;
 
@@ -59,8 +59,8 @@ public abstract class BaseGame extends JPanel {
     protected final List<AbstractEnemy> enemyAircrafts;
     protected final List<BaseBullet> heroBullets;
     protected final List<BaseBullet> enemyBullets;
-    protected final List<AbstractItems> items;
-    protected final List<AbstractItems> itemBombs;
+    protected final List<AbstractItem> items;
+    protected final List<AbstractItem> itemBombs;
     private int score = 0;
     protected int bossAppearFlag = 0;
     private boolean gameOverFlag = false;
@@ -197,7 +197,7 @@ public abstract class BaseGame extends JPanel {
                 eliteParam.get("hp")
         );
         enemyAircrafts.add(elite);
-        for(AbstractItems bomb : itemBombs){
+        for(AbstractItem bomb : itemBombs){
             ((ItemBomb)bomb).addSubscriber(elite);
         }
     }
@@ -212,7 +212,7 @@ public abstract class BaseGame extends JPanel {
                 mobParam.get("hp")
         );
         enemyAircrafts.add(mob);
-        for(AbstractItems bomb : itemBombs){
+        for(AbstractItem bomb : itemBombs){
             ((ItemBomb)bomb).addSubscriber(mob);
         }
     }
@@ -251,7 +251,7 @@ public abstract class BaseGame extends JPanel {
             if(!(enemyAircraft instanceof MobEnemy)) {
                 bullets = enemyAircraft.shoot();
                 enemyBullets.addAll(bullets);
-                for(AbstractItems bomb : itemBombs){
+                for(AbstractItem bomb : itemBombs){
                     ((ItemBomb)bomb).addAllSubscriber(bullets);
                 }
             }
@@ -279,7 +279,7 @@ public abstract class BaseGame extends JPanel {
     }
 
     private void itemsMoveAction() {
-        for (AbstractItems item : items) {
+        for (AbstractItem item : items) {
             item.forward();
         }
     }
@@ -299,14 +299,14 @@ public abstract class BaseGame extends JPanel {
             else if(bullet.crash(heroAircraft)){
                 // 英雄机损失生命值
                 heroAircraft.decreaseHp(bullet.getPower());
-                for(AbstractItems bomb : itemBombs){
+                for(AbstractItem bomb : itemBombs){
                     ((ItemBomb)bomb).deleteSubscriber(bullet);
                 }
                 bullet.vanish();
             }
         }
         // 英雄子弹攻击敌机
-        AbstractItems newItem = null;
+        AbstractItem newItem = null;
         for (BaseBullet bullet : heroBullets) {
             if (bullet.notValid()) {
                 continue;
@@ -347,7 +347,7 @@ public abstract class BaseGame extends JPanel {
                             }
                         }
                         if(!(enemyAircraft instanceof BossEnemy)){
-                            for(AbstractItems bomb : itemBombs){
+                            for(AbstractItem bomb : itemBombs){
                                 ((ItemBomb)bomb).deleteSubscriber(enemyAircraft);
                             }
                         }
@@ -388,7 +388,7 @@ public abstract class BaseGame extends JPanel {
         }
 
         // 道具生效+火力道具计时
-        for(AbstractItems item : items){
+        for(AbstractItem item : items){
             if(item.notValid()) {
                 continue;
             } else if(item.crash(heroAircraft) || heroAircraft.crash(item)){
@@ -474,7 +474,7 @@ public abstract class BaseGame extends JPanel {
         heroBullets.removeIf(AbstractFlyingObject::notValid);
         enemyAircrafts.removeIf(AbstractFlyingObject::notValid);
         items.removeIf(AbstractFlyingObject::notValid);
-        itemBombs.removeIf(AbstractItems::notValid);
+        itemBombs.removeIf(AbstractItem::notValid);
     }
 
 

@@ -7,7 +7,7 @@ import edu.hitsz.bullet.BaseBullet;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ItemBomb extends AbstractItems{
+public class ItemBomb extends AbstractItem {
 
     private ArrayList<AbstractFlyingObject> subscriber = new ArrayList<>();
 

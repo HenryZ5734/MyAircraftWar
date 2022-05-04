@@ -1,12 +1,12 @@
 package edu.hitsz.itemscreator;
 
-import edu.hitsz.items.AbstractItems;
+import edu.hitsz.items.AbstractItem;
 
 /**
  *
  * @author HenryZ
  */
-public interface ItemsCreator {
+public interface ItemCreator {
     /**
      * 创建道具的抽象方法
      * @param locationX
@@ -15,5 +15,5 @@ public interface ItemsCreator {
      * @param speedY
      * @return
      */
-    AbstractItems createItem(int locationX, int locationY, int speedX, int speedY);
+    AbstractItem createItem(int locationX, int locationY, int speedX, int speedY);
 }

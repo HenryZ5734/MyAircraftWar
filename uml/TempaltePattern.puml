@@ -1,0 +1,84 @@
+@startuml
+
+class EasyGame {
+# void generateEnemy()
+# void generateBoss()
+# void difficultyUpdateCheck()
+# void paintBackground(Graphics)
+}
+
+class NormalGame {
+# void generateEnemy()
+# void generateBoss()
+# void difficultyUpdateCheck()
+# void paintBackground(Graphics)
+}
+
+class HardGame {
+# void generateEnemy()
+# void generateBoss()
+# void difficultyUpdateCheck()
+# void paintBackground(Graphics)
+}
+
+abstract class BaseGame {
+# int backGroundTop
+- ScheduledExecutorService executorService
+- Thread calTimeThread
+- MusicThread bossMusic
+- int timeInterval
+- int enemyCycleTime
+- int heroCycleTime
+# int time
+- HeroAircraft heroAircraft
+# List<AbstractEnemy> enemyAircrafts
+# List<BaseBullet> heroBullets
+# List<BaseBullet> enemyBullets
+# List<AbstractItem> items
+# List<AbstractItem> itemBombs
+- int score
+# int bossAppearFlag
+- boolean gameOverFlag
+# Boolean playMusic
+# {static} int bossAppearThreshold
+# {static} int enemyMaxNumber
+# {static} double eliteAppearThreshold
+# {static} double[] dropItemThresh
+# {static} int enemyCycleDuration
+# {static} int heroCycleDuration
+# {static} int difficultyUpdateCycle
+# {static} HashMap<String,Integer> mobParam
+# {static} HashMap<String,Integer> eliteParam
+# {static} HashMap<String,Integer> bossParam
++ void action(String)
+# {abstract}void generateEnemy()
+# {abstract}void generateBoss()
+# void generateBossMusic(Boolean)
+# void generateElite()
+# void generateMob()
+- boolean timeCountAndNewCycleJudge(int,int)
+- void enemyShootAction()
+- void heroShootAction()
+- void bulletsMoveAction()
+- void aircraftsMoveAction()
+- void itemsMoveAction()
+- void crashCheckAction()
+# {abstract}void difficultyUpdateCheck()
+- void checkGameOver()
++ void setPlayMusic(Boolean)
+- void postProcessAction()
++ boolean isGameOverFlag()
++ int getScore()
++ void paint(Graphics)
+# {abstract}void paintBackground(Graphics)
+- void paintImageWithPositionRevised(Graphics,List<? extends AbstractFlyingObject>)
+- void paintScoreAndLife(Graphics)
+}
+
+
+BaseGame <|-- NormalGame
+BaseGame <|-- HardGame
+BaseGame <|-- EasyGame
+JPanel <|-- BaseGame
+
+@enduml

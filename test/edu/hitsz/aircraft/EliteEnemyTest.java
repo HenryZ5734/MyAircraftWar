@@ -1,6 +1,6 @@
 package edu.hitsz.aircraft;
 
-import edu.hitsz.items.AbstractItems;
+import edu.hitsz.items.AbstractItem;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -51,7 +51,7 @@ class EliteEnemyTest {
     void dropItems() {
         Object item = eliteEnemy.dropItems(new double[]{0.4, 0.6, 0.9});
         if(item!=null){
-            assertInstanceOf(AbstractItems.class, item);
+            assertInstanceOf(AbstractItem.class, item);
         }else{
             assertNull(null);
         }

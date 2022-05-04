@@ -1,11 +1,11 @@
 package edu.hitsz.aircraft;
 
 import edu.hitsz.application.Main;
-import edu.hitsz.items.AbstractItems;
+import edu.hitsz.items.AbstractItem;
 import edu.hitsz.itemscreator.ItemBloodCreator;
 import edu.hitsz.itemscreator.ItemBombCreator;
 import edu.hitsz.itemscreator.ItemFireCreator;
-import edu.hitsz.itemscreator.ItemsCreator;
+import edu.hitsz.itemscreator.ItemCreator;
 
 /**
  * @author henry
@@ -20,18 +20,18 @@ public abstract class AbstractEnemy extends AbstractAircraft{
     }
 
     /** 产生道具 */
-    public AbstractItems dropItems(double[] thresh){
+    public AbstractItem dropItems(double[] thresh){
         double i = Math.random();
         if(i<thresh[0]) {
             return null;
         } else if(i<thresh[1]){
-            ItemsCreator creator = new ItemBloodCreator();
+            ItemCreator creator = new ItemBloodCreator();
             return creator.createItem(locationX, locationY, 0, 4);
         } else if(i<thresh[2]){
-            ItemsCreator creator = new ItemFireCreator();
+            ItemCreator creator = new ItemFireCreator();
             return creator.createItem(locationX, locationY, 0, 4);
         } else{
-            ItemsCreator creator = new ItemBombCreator();
+            ItemCreator creator = new ItemBombCreator();
             return creator.createItem(locationX, locationY, 0, 4);
         }
     }

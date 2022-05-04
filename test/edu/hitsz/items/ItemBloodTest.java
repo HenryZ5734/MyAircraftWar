@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ItemBloodTest {
 
-    private AbstractItems item;
+    private AbstractItem item;
     private HeroAircraft heroAircraft = HeroAircraft.getHeroAircraft();
 
     @BeforeEach

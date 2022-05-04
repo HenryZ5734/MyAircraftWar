@@ -1,0 +1,37 @@
+@startuml
+
+interface Serializable
+
+class Record {
+- String name
+- int score
+- int rank
+- String time
+- void setTime()
++ void setRank(int)
++ int getRank()
++ int getScore()
++ String getName()
++ String getTime()
++ String toString()
+}
+
+interface RecordDao {
++ void addRecord(String,int,String)
++ void deleteRecordByIndex(int,String)
++ ArrayList<Record> getRecordsFromFile(File)
+}
+
+class RecordDaoImpl {
++ void addRecord(String,int,String)
++ void deleteRecordByIndex(int,String)
++ ArrayList<Record> getRecordsFromFile(File)
++ void sortByScoreDescending(ArrayList<Record>)
+- File openFile(String)
+}
+
+
+Serializable <|.. Record
+RecordDao <|.. RecordDaoImpl
+RecordDaoImpl --> Record
+@enduml

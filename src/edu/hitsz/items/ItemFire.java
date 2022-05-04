@@ -5,7 +5,7 @@ import edu.hitsz.aircraft.HeroAircraft;
 /**
  * @author HenryZ
  */
-public class ItemFire extends AbstractItems{
+public class ItemFire extends AbstractItem {
 
     public ItemFire(int locationX, int locationY, int speedX, int speedY) {
         super(locationX, locationY, speedX, speedY);

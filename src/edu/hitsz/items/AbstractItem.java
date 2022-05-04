@@ -4,9 +4,9 @@ import edu.hitsz.aircraft.HeroAircraft;
 import edu.hitsz.application.Main;
 import edu.hitsz.basic.AbstractFlyingObject;
 
-public abstract class AbstractItems extends AbstractFlyingObject {
+public abstract class AbstractItem extends AbstractFlyingObject {
 
-    public AbstractItems(int locationX, int locationY, int speedX, int speedY){
+    public AbstractItem(int locationX, int locationY, int speedX, int speedY){
         super(locationX, locationY, speedX, speedY);
     }
 

@@ -1,15 +1,28 @@
 @startuml
 
 AbstractShootStrategy <|.. BossSpread
+AbstractShootStrategy <|.. EliteStraight
 AbstractShootStrategy <|.. HeroSpread
 AbstractShootStrategy <|.. HeroStraight
-AbstractShootStrategy <|.. EliteStraight
+
+
+HeroAircraft o..> HeroSpread
+HeroAircraft o..> HeroStraight
+EliteEnemy o..> EliteStraight
+BossEnemy o..> BossSpread
+
+class HeroAircraft{}
+class EliteEnemy{}
+class BossEnemy{}
 
 interface AbstractShootStrategy{
     + {abstract}executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
 }
 
 class BossSpread{
+    + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
+}
+class EliteStraight{
     + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
 }
 
@@ -21,8 +34,5 @@ class HeroStraight{
     + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
 }
 
-class EliteStraight{
-    + executeStrategy(int x, int y, int speedX, int speedY):List<BaseBullet>
-}
 
 @enduml
