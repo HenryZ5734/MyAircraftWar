@@ -11,8 +11,8 @@ public class EasyGame extends BaseGame{
     // 设置游戏参数
     static{
         enemyMaxNumber = 5;
-        dropItemThresh = new double[]{0.2, 0.5, 0.7};
-        eliteAppearThreshold = 0.5;
+        dropItemThresh = new double[]{0.3, 0.6, 0.8};
+        eliteAppearThreshold = 0.4;
         enemyCycleDuration = 400;
         heroCycleDuration = 250;
         mobParam.putAll(Map.of(

@@ -14,7 +14,7 @@ public class HardGame extends BaseGame{
     static{
         enemyMaxNumber = 9;
         bossAppearThreshold = 400;
-        dropItemThresh = new double[]{0.4, 0.7, 0.9};
+        dropItemThresh = new double[]{0.4, 0.7, 0.85};
         eliteAppearThreshold = 0.5;
         enemyCycleDuration = 400;
         heroCycleDuration = 250;
@@ -72,7 +72,7 @@ public class HardGame extends BaseGame{
     @Override
     protected void difficultyUpdateCheck() {
         if (time > 0 && time % difficultyUpdateCycle == 0) {
-            if(mobParam.get("hp") < 120){
+            if(mobParam.get("hp") < 90){
                 mobParam.replace("hp", (int)(eliteParam.get("hp")*1.5));
                 eliteParam.replace("hp", (int)(eliteParam.get("hp")*1.5));
                 bossParam.replace("hp", (int)(eliteParam.get("hp")*1.5));

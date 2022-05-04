@@ -15,8 +15,8 @@ public class NormalGame extends BaseGame{
     static{
         enemyMaxNumber = 7;
         bossAppearThreshold = 500;
-        dropItemThresh = new double[]{0.3, 0.6, 0.8};
-        eliteAppearThreshold = 0.6;
+        dropItemThresh = new double[]{0.35, 0.65, 0.85};
+        eliteAppearThreshold = 0.45;
         enemyCycleDuration = 400;
         heroCycleDuration = 250;
         mobParam.putAll(Map.of(
@@ -72,7 +72,7 @@ public class NormalGame extends BaseGame{
     protected void difficultyUpdateCheck() {
         if(time > 0 && time % difficultyUpdateCycle == 0){
             // 普通敌机血量小于120时靠增加血量增强难度
-            if (mobParam.get("hp") < 120) {
+            if (mobParam.get("hp") < 90) {
                 mobParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
                 eliteParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
                 bossParam.replace("hp", (int) (eliteParam.get("hp") * 1.3));
